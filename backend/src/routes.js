@@ -26,7 +26,6 @@ const authenticateToken = (req, res, next) => {
 };
 
 //rotas
-
 routes.post("/login", (req, res) => {
     const { email, password } = req.body;
     const user = findUserByEmail(email);
@@ -36,7 +35,8 @@ routes.post("/login", (req, res) => {
             "secretkey",
             { expiresIn: "1h" }
         );
-        return res.json({ token });
+
+        return res.json({ token, type: user.type });
     } else {
         return res
             .status(401)
@@ -45,14 +45,28 @@ routes.post("/login", (req, res) => {
 });
 
 routes.post("/users", authenticateToken, (req, res) => {
+    if (req.user.type !== "admin") {
+        return res
+            .status(403)
+            .json({ message: "Apenas administradores podem criar usuários!" });
+    }
+
     const { email, name, type, password } = req.body;
+
     if (findUserByEmail(email)) {
         return res.status(400).json({ message: "Email já cadastrado!" });
     }
-
     const newUser = { email, name, type, password };
     users.push(newUser);
     res.status(201).json(newUser);
+});
+
+routes.get("/listUsers", authenticateToken, (req, res) => {
+    try {
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: "Erro ao buscar usuários!" });
+    }
 });
 
 routes.delete("/users/:email", authenticateToken, (req, res) => {

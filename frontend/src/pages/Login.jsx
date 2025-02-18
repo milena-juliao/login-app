@@ -12,9 +12,10 @@ const Login = () => {
         try {
             const response = await api.post("/login", { email, password });
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("userType", response.data.type);
             navigate("/users");
         } catch (error) {
-            alert("Login falhou! Verifique suas credenciais.");
+            console.log("Login falhou! Verifique suas credenciais.");
         }
     };
 
