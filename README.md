@@ -23,5 +23,5 @@ Autenticação de login para gerenciamento de usuários e controle de acessos.
 
 ###  **1. Clone o repositório**
 ###  **2. npm install**
-###  **2. npm run dev**
+###  **3. npm run dev**
 
