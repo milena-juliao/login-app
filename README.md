@@ -27,7 +27,7 @@ Autenticação de login para gerenciamento de usuários e controle de acessos.
 ###  **4. Em seguida rode npm install --prefix frontend e npm install --prefix backend**
 ###  **5. Para dar o start basta rodar npm run dev**
 
-###OU
+### **OU**
 
 ###  **1. Clone o repositório**
 ###  **2. Na pasta "login-app" rode npm install**
