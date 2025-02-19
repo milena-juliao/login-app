@@ -38,9 +38,7 @@ routes.post("/login", (req, res) => {
 
         return res.json({ token, type: user.type });
     } else {
-        return res
-            .status(401)
-            .json({ message: "Informações de login incorretas!" });
+        return res.status(401).json({ message: "Login ou senha inválidos!" });
     }
 });
 

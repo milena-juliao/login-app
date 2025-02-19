@@ -1,7 +1,28 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import {
+    ButtonContainer,
+    Container,
+    DeleteButton,
+    EditButton,
+    Header,
+    LogoutButton,
+    UserInput,
+    UserSelect,
+    UserItem,
+    UserList,
+    UserInputContainer,
+    SaveButton,
+} from "../styles/ControleUsuarios.styled";
+import api from "../services/api";
 import FormUsuarios from "../components/FormUsuarios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faEdit,
+    faTimes,
+    faCheck,
+    faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ControleUsuarios = () => {
     const [users, setUsers] = useState([]);
@@ -27,7 +48,7 @@ const ControleUsuarios = () => {
             });
             setUsers(response.data);
         } catch (error) {
-            alert("Erro ao buscar usuários!");
+            console.log("Erro ao buscar usuários!");
         }
     };
 
@@ -49,11 +70,11 @@ const ControleUsuarios = () => {
                     headers: { Authorization: token },
                 }
             );
-            alert("Usuário atualizado com sucesso!");
+            console.log("Usuário atualizado com sucesso!");
             setEditUser(null);
             buscaUsuarios();
         } catch (error) {
-            alert("Erro ao salvar usuário!");
+            console.log("Erro ao salvar usuário!");
         }
     };
 
@@ -62,10 +83,10 @@ const ControleUsuarios = () => {
             await api.delete(`/users/${email}`, {
                 headers: { Authorization: token },
             });
-            alert("Usuário removido com sucesso!");
+            console.log("Usuário removido com sucesso!");
             buscaUsuarios();
         } catch (error) {
-            alert("Erro ao remover usuário!");
+            console.log("Erro ao remover usuário!");
         }
     };
 
@@ -76,90 +97,82 @@ const ControleUsuarios = () => {
     };
 
     return (
-        <div>
-            <header
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                }}
-            >
+        <Container>
+            <Header>
                 <h1>
-                    {" "}
                     {userType === "admin"
                         ? "Gerenciamento de Usuários"
-                        : "Visualizar Usuários"}
+                        : "Listagem de Usuários"}
                 </h1>
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        padding: "8px",
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Sair
-                </button>
-            </header>
+                <LogoutButton onClick={handleLogout}>Sair</LogoutButton>
+            </Header>
 
-            <FormUsuarios token={token} saveUser={buscaUsuarios} />
+            {userType === "admin" && (
+                <FormUsuarios token={token} saveUser={buscaUsuarios} />
+            )}
 
-            <ul>
+            <UserList>
+                <h2>Usuários</h2>
                 {users.map((user) => (
-                    <li
-                        key={user.email}
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                            alignItems: "center",
-                        }}
-                    >
-                        <input
-                            type="text"
-                            value={
-                                editUser === user.email
-                                    ? editData.name
-                                    : user.name
-                            }
-                            disabled={editUser !== user.email}
-                            onChange={(e) => handleChange(e, "name")}
-                        />
-                        <input type="email" value={user.email} disabled />
-                        <select
-                            value={
-                                editUser === user.email
-                                    ? editData.type
-                                    : user.type
-                            }
-                            disabled={editUser !== user.email}
-                            onChange={(e) => handleChange(e, "type")}
-                        >
-                            <option value="user">Usuário</option>
-                            <option value="admin">Admin</option>
-                        </select>
+                    <UserItem key={user.email}>
+                        <UserInputContainer>
+                            <UserInput
+                                type="text"
+                                value={
+                                    editUser === user.email
+                                        ? editData.name
+                                        : user.name
+                                }
+                                disabled={editUser !== user.email}
+                                onChange={(e) => handleChange(e, "name")}
+                            />
+                            <UserInput
+                                type="email"
+                                value={
+                                    editUser === user.email
+                                        ? editData.email
+                                        : user.email
+                                }
+                                disabled={editUser !== user.email}
+                            />
+                            <UserSelect
+                                value={
+                                    editUser === user.email
+                                        ? editData.type
+                                        : user.type
+                                }
+                                disabled={editUser !== user.email}
+                                onChange={(e) => handleChange(e, "type")}
+                            >
+                                <option value="user">Usuário</option>
+                                <option value="admin">Admin</option>
+                            </UserSelect>
+                        </UserInputContainer>
 
                         {userType === "admin" && (
-                            <>
+                            <ButtonContainer>
                                 {editUser === user.email ? (
-                                    <button onClick={handleSave}>Salvar</button>
+                                    <SaveButton onClick={handleSave}>
+                                        <FontAwesomeIcon icon={faCheck} />
+                                    </SaveButton>
                                 ) : (
-                                    <button onClick={() => handleEdit(user)}>
-                                        Editar
-                                    </button>
+                                    <EditButton
+                                        onClick={() => handleEdit(user)}
+                                    >
+                                        <FontAwesomeIcon icon={faEdit} />
+                                    </EditButton>
                                 )}
-                                <button
+                                <DeleteButton
                                     onClick={() => handleDelete(user.email)}
                                 >
-                                    Excluir
-                                </button>
-                            </>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </DeleteButton>
+                            </ButtonContainer>
                         )}
-                    </li>
+                    </UserItem>
                 ))}
-            </ul>
-        </div>
+            </UserList>
+        </Container>
     );
 };
 
